@@ -1,25 +1,57 @@
 <% layout("/layouts/boilerplate") %>
 
-    <div class="row mt-3">
-        <h1 class="col-6 offset-3">SignUp on Wanderlust</h1>
-        <div class="col-6 offset-3">
-            <form action="/signup" method="POST" class="needs-validation" novalidate>
-                <div class="md-3">
-                    <label for="username" class="form-label">Username</label>
-                    <input id="username" name="username" , type="text" class="form-control" required />
-                    <div class="valid-feedback">looks good!</div>
+<div class="airbnb-auth-page">
+    <div class="airbnb-auth-card">
+        <div class="auth-card-header">
+            <h2 class="auth-header-title">Sign up</h2>
+        </div>
+        
+        <div class="auth-card-body">
+            <h3 class="auth-welcome-text">Welcome to Airbnb</h3>
+            
+            <form action="/signup" method="POST" class="needs-validation auth-form" novalidate>
+                <div class="mb-3">
+                    <label for="username" class="airbnb-form-label">Username</label>
+                    <input id="username" name="username" type="text" class="form-control airbnb-input" placeholder="Choose a username" required autofocus />
+                    <div class="valid-feedback">Looks good!</div>
+                    <div class="invalid-feedback">Please choose a username.</div>
                 </div>
 
-                <div class="md-3">
-                    <label for="email" class="form-label">Email</label>
-                    <input id="email" name="email" , type="email" class="form-control" required />
+                <div class="mb-3">
+                    <label for="email" class="airbnb-form-label">Email</label>
+                    <input id="email" name="email" type="email" class="form-control airbnb-input" placeholder="name@example.com" required />
+                    <div class="invalid-feedback">Please enter a valid email address.</div>
                 </div>
 
-                <div class="md-3">
-                    <label for="password" class="form-label">Password</label>
-                    <input id="password" name="password" , type="password" class="form-control" required />
+                <div class="mb-3">
+                    <label for="password" class="airbnb-form-label">Password</label>
+                    <input id="password" name="password" type="password" class="form-control airbnb-input" placeholder="Create a password" required />
+                    <div class="invalid-feedback">Please enter a password.</div>
                 </div>
-                <button class="btn btn-success mt-2">SignUP</button>
+
+                <p class="small text-muted mb-3">
+                    By selecting <b>Agree and continue</b>, I agree to Airbnb's Terms of Service, Payments Terms of Service, and Nondiscrimination Policy.
+                </p>
+
+                <button class="btn btn-airbnb-primary w-100 py-3 fw-bold">
+                    Agree and continue
+                </button>
             </form>
+
+            <div class="auth-divider">
+                <span>or</span>
+            </div>
+
+            <div class="auth-social-buttons">
+                <button type="button" class="btn btn-outline-dark w-100 py-2 mb-2 rounded-3 d-flex align-items-center justify-content-center gap-2" onclick="alert('Google signup is mock in demo mode')">
+                    <i class="fa-brands fa-google text-danger"></i>
+                    <span class="small fw-semibold">Continue with Google</span>
+                </button>
+            </div>
+
+            <p class="auth-switch-text text-center mt-3 mb-0">
+                Already have an account? <a href="/login" class="fw-bold text-decoration-underline text-dark">Log in</a>
+            </p>
         </div>
     </div>
+</div>

@@ -1,16 +1,27 @@
-<% if(success[0]){ %>
-<div  class="alert alert-success alert-dismissible fade show col-6 offset-3 " role="alert">
-    <%= success[0] %>
-    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close">
-  </button>
-</div>
+<% if(typeof success !== "undefined" && success.length > 0 && success[0]){ %>
+    <div class="airbnb-toast-container my-3">
+        <div class="airbnb-toast airbnb-toast-success alert alert-dismissible fade show" role="alert">
+            <div class="toast-icon">
+                <i class="fa-solid fa-circle-check"></i>
+            </div>
+            <div class="toast-content">
+                <%= success[0] %>
+            </div>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    </div>
 <% } %>
 
-
-<% if(error[0]){ %>
-<div  class="alert alert-danger alert-dismissible fade show col-6 offset-3 " role="alert">
-    <%= error[0] %>
-    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close">
-  </button>
-</div>
+<% if(typeof error !== "undefined" && error.length > 0 && error[0]){ %>
+    <div class="airbnb-toast-container my-3">
+        <div class="airbnb-toast airbnb-toast-danger alert alert-dismissible fade show" role="alert">
+            <div class="toast-icon">
+                <i class="fa-solid fa-circle-exclamation"></i>
+            </div>
+            <div class="toast-content">
+                <%= error[0] %>
+            </div>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    </div>
 <% } %>

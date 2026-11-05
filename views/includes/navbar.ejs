@@ -1,60 +1,105 @@
-<style>
-    .btn-search{
-       background-color: #fe424d;
-       color: #fff;
-       border-radius: 25px;
-       padding: 0 1rem;
-    }
-    .btn-search:hover{
-       background-color: #fe424d;
-       color: #fff;
-    }
+<header class="airbnb-header sticky-top">
+    <!-- Top Nav Row -->
+    <div class="airbnb-nav-container">
+        <!-- Logo -->
+        <a class="airbnb-brand" href="/listings">
+            <svg class="airbnb-logo-icon" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" role="presentation" focusable="false">
+                <path d="M16 1c2.008 0 3.463.963 4.751 3.269l.533 1.025c1.954 3.83 6.114 12.54 7.1 14.836.786 1.83 1.026 3.167.755 4.542-.429 2.179-1.996 3.916-4.144 4.597-1.32.418-2.738.312-4.116-.307-.946-.425-1.895-1.127-2.885-2.124l-.994-1.002-.994 1.002c-.99.997-1.939 1.699-2.885 2.124-1.378.619-2.796.725-4.116.307-2.148-.681-3.715-2.418-4.144-4.597-.271-1.375-.031-2.712.755-4.542.986-2.296 5.146-11.006 7.1-14.836l.533-1.025C12.537 1.963 13.992 1 16 1zm0 2c-1.317 0-2.378.65-3.414 2.493l-.532 1.023c-1.94 3.803-6.079 12.463-7.03 14.678-.598 1.393-.761 2.377-.557 3.411.31 1.575 1.455 2.846 3.018 3.342.989.314 2.063.238 3.109-.232.887-.398 1.82-1.077 2.812-2.074l2.594-2.613 2.594 2.613c.992.997 1.925 1.676 2.812 2.074 1.046.47 2.12.546 3.109.232 1.563-.496 2.708-1.767 3.018-3.342.204-1.034.041-2.018-.557-3.411-.951-2.215-5.09-10.875-7.03-14.678l-.532-1.023C18.378 3.65 17.317 3 16 3zm0 13c2.209 0 4 1.791 4 4 0 1.258-.58 2.38-1.488 3.109l-.497.359c-.611.394-1.296.532-2.015.532-.719 0-1.404-.138-2.015-.532l-.497-.359C12.58 22.38 12 21.258 12 20c0-2.209 1.791-4 4-4zm0 2c-1.105 0-2 .895-2 2 0 .633.295 1.198.76 1.566.368.291.802.434 1.24.434.438 0 .872-.143 1.24-.434.465-.368.76-.933.76-1.566 0-1.105-.895-2-2-2z" fill="currentColor"/>
+            </svg>
+            <span class="airbnb-brand-text">airbnb</span>
+        </a>
 
-    .btn-search i{
-        display: inline;
-        margin-right: 0.5rem;
-    }
+        <!-- Center Nav Navigation (Image 3) -->
+        <div class="airbnb-center-nav d-none d-md-flex">
+            <a href="/listings" class="nav-category-tab active" data-category="all">
+                <span class="nav-cat-icon">🌐</span>
+                <span class="nav-cat-label">All</span>
+            </a>
+            <a href="/listings?category=homes" class="nav-category-tab" data-category="homes">
+                <span class="nav-cat-icon">🏡</span>
+                <span class="nav-cat-label">Homes</span>
+            </a>
+            <a href="/listings?category=experiences" class="nav-category-tab" data-category="experiences">
+                <span class="nav-cat-icon">🎈</span>
+                <span class="nav-cat-label">Experiences</span>
+            </a>
+            <a href="/listings?category=services" class="nav-category-tab" data-category="services">
+                <span class="nav-cat-icon">🛎️</span>
+                <span class="nav-cat-label">Services</span>
+            </a>
+        </div>
 
-    .search-input{
-        border-radius: 25px;
-       padding: 0.5rem 3rem 0.5rem 3rem;
-       font-size: 0.9rem;
-    }
-</style>
+        <!-- Right Side Nav Actions -->
+        <div class="airbnb-right-nav">
+            <a href="/listings/new" class="host-pill-btn">Become a host</a>
+            <button class="globe-btn" type="button" aria-label="Choose language and currency" title="Language & Currency">
+                <i class="fa-solid fa-globe"></i>
+            </button>
 
-
-
-<nav class="navbar navbar-expand-md bg-body-light border-bottom sticky-top">
-    <div class="container-fluid">
-        <a class="navbar-brand" href="/listings"><i class="fa-regular fa-compass"></i></a>
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavAltMarkup"
-            aria-controls="navbarNavAltMarkup">
-            <span class="navbar-toggler-icon"></span>
-        </button>
-
-        <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
-            <div class="navbar-nav">
-                <a class="nav-link" href="/listings">Explore</a>
-            </div>
-
-            <div class="navbar-nav ms-auto">
-                <form class="d-flex" role="search">
-                    <input class="form-control search-input  me-2" type="search" placeholder="Search detination" />
-                    <button class="btn btn-search" type="submit"><i class="fa-solid fa-magnifying-glass"></i>Search</button>
-                </form>
-            </div>
-
-            <div class="navbar-nav ms-auto">
-                <a class="nav-link" href="/listings/new">Airbnb your home</a>
-                
+            <!-- User Menu Dropdown -->
+            <div class="dropdown">
+                <button class="user-menu-pill dropdown-toggle" type="button" id="userMenuDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                    <i class="fa-solid fa-bars hamburger-icon"></i>
+                    <div class="user-avatar-circle">
+                        <% if(typeof currUser !== "undefined" && currUser){ %>
+                            <span class="user-avatar-initial"><%= currUser.username.charAt(0).toUpperCase() %></span>
+                        <% } else { %>
+                            <i class="fa-solid fa-circle-user"></i>
+                        <% } %>
+                    </div>
+                </button>
+                <ul class="dropdown-menu dropdown-menu-end airbnb-dropdown-menu" aria-labelledby="userMenuDropdown">
                     <% if(typeof currUser === "undefined" || !currUser){ %>
-                    <a class="nav-link " aria-current="page" href="/signup"><b>Sign up</b></a>
-                    <a class="nav-link" href="/login"><b>Log in</b></a>
+                        <li><a class="dropdown-item fw-bold" href="/signup">Sign up</a></li>
+                        <li><a class="dropdown-item" href="/login">Log in</a></li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li><a class="dropdown-item" href="/listings/new">Airbnb your home</a></li>
+                        <li><a class="dropdown-item" href="/listings">Help Centre</a></li>
+                    <% } else { %>
+                        <li class="dropdown-header text-truncate">Signed in as <b><%= currUser.username %></b></li>
+                        <li><a class="dropdown-item" href="/listings/new">Airbnb your home</a></li>
+                        <li><a class="dropdown-item" href="/listings">Explore listings</a></li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li><a class="dropdown-item text-danger" href="/logout">Log out</a></li>
                     <% } %>
-                        <% if(currUser){ %>
-                            <a class="nav-link " aria-disabled="true" href="/logout"><b>Log out</b></a>
-                            <% } %>
+                </ul>
             </div>
         </div>
     </div>
-</nav>
+
+    <!-- Search Bar Row (Image 3 expanded pill & Image 2 compact pill) -->
+    <div class="airbnb-search-bar-row">
+        <!-- Expanded Search Bar (Home / Index style) -->
+        <form class="airbnb-search-bar" id="expandedSearchBar" role="search" action="/listings" method="GET">
+            <div class="search-section search-where">
+                <label for="searchWhereInput" class="search-label">Where</label>
+                <input type="text" id="searchWhereInput" name="q" class="search-input" placeholder="Search destinations" autocomplete="off" />
+            </div>
+            <div class="search-divider"></div>
+            <div class="search-section search-when">
+                <label class="search-label">When</label>
+                <span class="search-placeholder">Add dates</span>
+            </div>
+            <div class="search-divider"></div>
+            <div class="search-section search-who">
+                <label class="search-label">Who</label>
+                <span class="search-placeholder">Add guests</span>
+            </div>
+            <button type="submit" class="search-btn-circle" aria-label="Search">
+                <i class="fa-solid fa-magnifying-glass"></i>
+            </button>
+        </form>
+
+        <!-- Compact Search Bar (Show page / Scrolled style) -->
+        <div class="airbnb-compact-search-bar d-none" id="compactSearchBar" role="button" tabindex="0">
+            <span class="compact-part fw-semibold">Anywhere</span>
+            <span class="compact-divider"></span>
+            <span class="compact-part fw-semibold">Anytime</span>
+            <span class="compact-divider"></span>
+            <span class="compact-part text-muted">Add guests</span>
+            <span class="compact-btn-circle">
+                <i class="fa-solid fa-magnifying-glass"></i>
+            </span>
+        </div>
+    </div>
+</header>

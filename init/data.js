@@ -1,5 +1,127 @@
 const sampleListings = [
   {
+    title: "Honeymoon Room - Balified Villa",
+    description:
+      "The listing is for a cozy bedroom with a queen size bed and an attached bath with a couple sized bathtub and all amenities for your comfortable stay. The washrooms are designed on the lines of Balinese architecture to make you feel like you are in Bali. You can lay back on your bed and watch your favourite series and take a nice hot relaxing bubble bath with a glass of your fav drink and truly fall into that holiday state of mind..!",
+    image: {
+      filename: "listingimage",
+      url: "https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?auto=format&fit=crop&w=1200&q=80",
+    },
+    price: 2660,
+    location: "Puducherry, near Auroville Beach",
+    country: "India",
+  },
+  {
+    title: "Home in Puducherry",
+    description: "Serene garden home situated in the heritage quarter of Puducherry, perfect for travelers seeking tranquility.",
+    image: {
+      filename: "listingimage",
+      url: "https://images.unsplash.com/photo-1590490360182-c33d57733427?auto=format&fit=crop&w=800&q=80",
+    },
+    price: 900,
+    location: "Puducherry",
+    country: "India",
+  },
+  {
+    title: "Flat in Puducherry",
+    description: "Modern sunlit flat located close to the French Colony and Promenade beach.",
+    image: {
+      filename: "listingimage",
+      url: "https://images.unsplash.com/photo-1616486338812-3dadae4b4ace?auto=format&fit=crop&w=800&q=80",
+    },
+    price: 3553,
+    location: "Puducherry",
+    country: "India",
+  },
+  {
+    title: "Room in Villupuram",
+    description: "Quiet, peaceful countryside accommodation between Pondicherry and Villupuram.",
+    image: {
+      filename: "listingimage",
+      url: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=800&q=80",
+    },
+    price: 1800,
+    location: "Villupuram",
+    country: "India",
+  },
+  {
+    title: "Flat in Puducherry",
+    description: "Chic studio apartment with sea breeze and rooftop view of Auroville green belt.",
+    image: {
+      filename: "listingimage",
+      url: "https://images.unsplash.com/photo-1600566753190-17f0baa2a6c3?auto=format&fit=crop&w=800&q=80",
+    },
+    price: 1960,
+    location: "Puducherry",
+    country: "India",
+  },
+  {
+    title: "Flat in Puducherry",
+    description: "Elegantly furnished luxury apartment with wooden aesthetic and modern amenities.",
+    image: {
+      filename: "listingimage",
+      url: "https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?auto=format&fit=crop&w=800&q=80",
+    },
+    price: 3147,
+    location: "Puducherry",
+    country: "India",
+  },
+  {
+    title: "Apartment in Puducherry",
+    description: "Spacious family apartment within walking distance of cafes, beach promenade, and boutiques.",
+    image: {
+      filename: "listingimage",
+      url: "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&w=800&q=80",
+    },
+    price: 3165,
+    location: "Puducherry",
+    country: "India",
+  },
+  {
+    title: "Villa in Vellore",
+    description: "Grand heritage villa featuring private pool and mango grove gardens.",
+    image: {
+      filename: "listingimage",
+      url: "https://images.unsplash.com/photo-1580587771525-78b9dba3b914?auto=format&fit=crop&w=800&q=80",
+    },
+    price: 10500,
+    location: "Vellore",
+    country: "India",
+  },
+  {
+    title: "Room in Yelagiri",
+    description: "Charming hillside lodge overlooking the Yelagiri lake and orchard valleys.",
+    image: {
+      filename: "listingimage",
+      url: "https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?auto=format&fit=crop&w=800&q=80",
+    },
+    price: 6888,
+    location: "Yelagiri",
+    country: "India",
+  },
+  {
+    title: "Home in Yelagiri",
+    description: "Rustic cottage surrounded by fruit orchards and misty mountain views.",
+    image: {
+      filename: "listingimage",
+      url: "https://images.unsplash.com/photo-1518780664697-55e3ad937233?auto=format&fit=crop&w=800&q=80",
+    },
+    price: 4560,
+    location: "Yelagiri",
+    country: "India",
+  },
+  {
+    title: "Villa in Yelagiri",
+    description: "Luxury hillside villa with panoramic decks and stargazing terrace.",
+    image: {
+      filename: "listingimage",
+      url: "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=800&q=80",
+    },
+    price: 9000,
+    location: "Yelagiri",
+    country: "India",
+  },
+  {
     title: "Cozy Beachfront Cottage",
     description:
       "Escape to this charming beachfront cottage for a relaxing getaway. Enjoy stunning ocean views and easy access to the beach.",
@@ -348,5 +470,12 @@ const sampleListings = [
     country: "Costa Rica",
   },
 ];
+
+sampleListings.forEach((item, idx) => {
+  if (!item._id) {
+    const hex = (idx + 1).toString(16).padStart(4, "0");
+    item._id = "6a732c11e83ec8790082" + hex;
+  }
+});
 
 module.exports = { data: sampleListings };

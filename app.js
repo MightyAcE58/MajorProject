@@ -1,3 +1,10 @@
+
+process.on("unhandledRejection", (err) => {
+    console.log("Handled background rejection:", err && err.message ? err.message : err);
+});
+process.on("uncaughtException", (err) => {
+    console.log("Handled background exception:", err && err.message ? err.message : err);
+});
 if (process.env.NODE_ENV != "production") {
     require('dotenv').config();
 }

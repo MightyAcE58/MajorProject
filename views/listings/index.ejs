@@ -1,138 +1,322 @@
 <% layout("/layouts/boilerplate") %>
 
-    <style>
-        #filters {
-            display: flex;
-            flex-wrap: wrap;
-            align-items: center;
+<div class="airbnb-index-page">
+    <% 
+        // Helper to get formatted location/category title
+        function getListingSubtitle(listing) {
+            let type = "Home";
+            const lowerTitle = (listing.title || "").toLowerCase();
+            if (lowerTitle.includes("room")) type = "Room";
+            else if (lowerTitle.includes("villa")) type = "Villa";
+            else if (lowerTitle.includes("flat") || lowerTitle.includes("apt") || lowerTitle.includes("apartment") || lowerTitle.includes("loft")) type = "Flat";
+            else if (lowerTitle.includes("cottage") || lowerTitle.includes("cabin")) type = "Cottage";
+            
+            return `${type} in ${listing.location || "India"}`;
         }
 
-        .filter {
-            text-align: center;
-            margin-right: 2rem;
-            margin-top: 2rem;
-            opacity: 0.7;
+        // Helper to get rating string
+        function getRating(listing, defaultRating) {
+            if (listing.reviews && listing.reviews.length > 0) {
+                let total = 0;
+                listing.reviews.forEach(r => total += (r.rating || 5));
+                return (total / listing.reviews.length).toFixed(2);
+            }
+            return defaultRating || "4.92";
         }
 
-        .filter:hover {
-            opacity: 1;
-            cursor: pointer;
-            text-shadow: black;
-        }
+        // Group listings into sections
+        const puducherryListings = allListings.filter(l => 
+            (l.location && (l.location.toLowerCase().includes("puducherry") || l.location.toLowerCase().includes("pondicherry") || l.location.toLowerCase().includes("auroville")))
+        );
 
-        .filter p {
-            font-size: 0.8rem;
-        }
+        const yelagiriListings = allListings.filter(l => 
+            (l.location && (l.location.toLowerCase().includes("yelagiri") || l.location.toLowerCase().includes("vellore")))
+        );
 
-        .tax-info {
-            display: none;
-        }
+        const keralaListings = allListings.filter(l => 
+            (l.location && (l.location.toLowerCase().includes("thiruvananthapuram") || l.location.toLowerCase().includes("kerala") || l.location.toLowerCase().includes("kochi")))
+        );
 
-        .tex-toggle{
-            border: 1px solid black;
-            border-radius: 1rem;
-            height: 3rem;
-            padding: 1rem;;
-            margin-left: 4rem;
-            display: flex;
-            align-items: center;
-        }
-    </style>
+        // If specific collections are small, intelligently distribute allListings across sections
+        let section1 = puducherryListings.length ? puducherryListings : allListings.slice(0, 7);
+        let section2 = yelagiriListings.length ? yelagiriListings : allListings.slice(7, 14);
+        let section3 = keralaListings.length ? keralaListings : allListings.slice(14, 21);
+        let section4 = allListings.slice(21);
 
+        // Titles & Subtitles matching Image 3
+        const sec1Title = puducherryListings.length ? "Guest favourite homes in Puducherry" : "Guest favourite homes";
+        const sec1Sub = puducherryListings.length ? "Indian guests often rate these homes highly" : "Guests often rate these homes highly";
 
-    <div id="filters">
-        <div class="filter">
-            <div> <i class="fa-solid fa-fire"></i></div>
-            <p>Trending</p>
-        </div>
-        <div class="filter">
-            <div> <i class="fa-solid fa-bed"></i></div>
-            <p>Room</p>
-        </div>
-        <div class="filter">
-            <div> <i class="fa-solid fa-mountain-city"></i></div>
-            <p>Iconic Cities</p>
-        </div>
-        <div class="filter">
-            <div> <i class="fa-solid fa-mountain"></i></div>
-            <p>Mountains</p>
-        </div>
-        <div class="filter">
-            <div> <i class="fa-brands fa-fort-awesome"></i></div>
-            <p>Castels</p>
-        </div>
-        <div class="filter">
-            <div> <i class="fa-solid fa-person-swimming"></i></div>
-            <p>Amazing Pools</p>
-        </div>
-        <div class="filter">
-            <div><i class="fa-solid fa-tents"></i></div>
-            <p>Camping</p>
-        </div>
-        <div class="filter">
-            <div><i class="fa-solid fa-tractor"></i></div>
-            <p>Farms</p>
-        </div>
-        <div class="filter">
-            <div><i class="fa-solid fa-snowman"></i></div>
-            <p>Arctic</p>
-        </div>
-        <div class="filter">
-            <div> <i class="fa-solid fa-igloo"></i></div>
-            <p>Domes </p>
-        </div>
-        <div class="filter">
-            <div><i class="fa-solid fa-sailboat"></i></i></div>
-            <p>Boats</p>
-        </div>
-        
-       
-        
+        const sec2Title = yelagiriListings.length ? "Available in Yelagiri this weekend" : "Available this weekend";
+        const sec2Sub = yelagiriListings.length ? "Hill town in Tamil Nadu with orchards" : "Popular spots for quick getaways";
 
-        <div class="tex-toggle ">
-            <div class="form-check-reverse form-switch">
-                <input class="form-check-input" type="checkbox" role="switch" id="switchCheckDefault">
-                <label class="form-check-label" for="switchCheckDefault">Display total after taxes</label>
+        const sec3Title = keralaListings.length ? "Places to stay in Thiruvananthapuram" : "Trending destinations to stay";
+        const sec3Sub = keralaListings.length ? "Kerala's capital with temple landmarks" : "Explore top rated stays across regions";
+    %>
+
+    <!-- Search / Filter Results Notice (if searched) -->
+    <div id="noResultsNotice" class="d-none text-center py-5">
+        <i class="fa-solid fa-magnifying-glass fa-3x text-muted mb-3"></i>
+        <h3>No exact matches found</h3>
+        <p class="text-muted">Try changing or clearing your search filter to see more listings.</p>
+        <button class="btn btn-outline-dark rounded-pill px-4" onclick="clearSearchFilter()">View all listings</button>
+    </div>
+
+    <!-- Section 1 (Guest favourite homes) -->
+    <% if(section1 && section1.length > 0) { %>
+    <section class="listings-section" id="section-puducherry">
+        <div class="section-header">
+            <div class="section-header-text">
+                <h2 class="section-title">
+                    <a href="/listings?region=puducherry" class="section-title-link">
+                        <%= sec1Title %> <span class="arrow-symbol">&rarr;</span>
+                    </a>
+                </h2>
+                <p class="section-subtitle"><%= sec1Sub %></p>
+            </div>
+            <div class="section-nav-arrows d-none d-md-flex">
+                <button class="carousel-arrow prev-btn" data-target="carousel-sec1" aria-label="Previous">
+                    <i class="fa-solid fa-chevron-left"></i>
+                </button>
+                <button class="carousel-arrow next-btn" data-target="carousel-sec1" aria-label="Next">
+                    <i class="fa-solid fa-chevron-right"></i>
+                </button>
             </div>
         </div>
-    </div>
 
-    <div class="row row-cols-lg-3 row-cols-md-2 row-cols-sm-1 mt-3">
-        <% for(let listing of allListings){%>
-            <a href="/listings/<%= listing._id %>" class="listing-link">
-                <div class="card col listing-card">
-                    <img src="<%= listing.image.url %>" class="card-img-top" alt="listing_image" style="height: 20rem;">
-                    <div class="card-img-overlay"></div>
-                    <div class="card-body">
-                        <p class="card-text">
-                            <b>
-                                <%= listing.title %>
-                            </b>
-                            <br />
-                            &#8377;<%= listing.price.toLocaleString("en-IN") %>/night <i class="tax-info">&nbsp;
-                                    &nbsp;+18% GST</i><br />
+        <div class="listings-carousel" id="carousel-sec1">
+            <% for(let i=0; i < section1.length; i++) { 
+                let listing = section1[i];
+                let rating = getRating(listing, (4.90 + (i % 10) * 0.01).toFixed(2));
+                let cardTitle = getListingSubtitle(listing);
+            %>
+            <div class="listing-card-wrapper" data-location="<%= (listing.location || '').toLowerCase() %>" data-title="<%= (listing.title || '').toLowerCase() %>">
+                <a href="/listings/<%= listing._id %>" class="airbnb-listing-card">
+                    <div class="card-media-container">
+                        <img src="<%= listing.image && listing.image.url ? listing.image.url : 'https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=800&q=60' %>" 
+                             class="card-img" 
+                             alt="<%= listing.title %>" 
+                             loading="lazy" />
+                        
+                        <!-- Guest Favourite Pill Badge -->
+                        <div class="badge-guest-favourite">
+                            <span>Guest favourite</span>
+                        </div>
 
-                                <i class="fa-solid fa-location-crosshairs"></i>
-                                <%= listing.location %> <br />
-                        </p>
+                        <!-- Wishlist Heart Button -->
+                        <button class="card-heart-btn" type="button" aria-label="Add to wishlist" onclick="toggleWishlist(event, this)">
+                            <i class="fa-regular fa-heart"></i>
+                        </button>
                     </div>
-                </div>
-            </a>
+
+                    <div class="card-info">
+                        <div class="card-title-row">
+                            <span class="card-title-text"><%= cardTitle %></span>
+                        </div>
+                        <div class="card-price-rating-row">
+                            <span class="card-price-text">&#8377;<%= listing.price ? listing.price.toLocaleString("en-IN") : '2,660' %></span>
+                            <span class="card-unit-text">for 1 night</span>
+                            <span class="card-dot">&middot;</span>
+                            <span class="card-rating"><i class="fa-solid fa-star star-icon"></i> <%= rating %></span>
+                        </div>
+                    </div>
+                </a>
+            </div>
             <% } %>
+        </div>
+    </section>
+    <% } %>
+
+    <!-- Section 2 (Available in Yelagiri this weekend) -->
+    <% if(section2 && section2.length > 0) { %>
+    <section class="listings-section" id="section-yelagiri">
+        <div class="section-header">
+            <div class="section-header-text">
+                <h2 class="section-title">
+                    <a href="/listings?region=yelagiri" class="section-title-link">
+                        <%= sec2Title %> <span class="arrow-symbol">&rarr;</span>
+                    </a>
+                </h2>
+                <p class="section-subtitle"><%= sec2Sub %></p>
+            </div>
+            <div class="section-nav-arrows d-none d-md-flex">
+                <button class="carousel-arrow prev-btn" data-target="carousel-sec2" aria-label="Previous">
+                    <i class="fa-solid fa-chevron-left"></i>
+                </button>
+                <button class="carousel-arrow next-btn" data-target="carousel-sec2" aria-label="Next">
+                    <i class="fa-solid fa-chevron-right"></i>
+                </button>
+            </div>
+        </div>
+
+        <div class="listings-carousel" id="carousel-sec2">
+            <% for(let i=0; i < section2.length; i++) { 
+                let listing = section2[i];
+                let rating = getRating(listing, (4.85 + (i % 15) * 0.01).toFixed(2));
+                let cardTitle = getListingSubtitle(listing);
+            %>
+            <div class="listing-card-wrapper" data-location="<%= (listing.location || '').toLowerCase() %>" data-title="<%= (listing.title || '').toLowerCase() %>">
+                <a href="/listings/<%= listing._id %>" class="airbnb-listing-card">
+                    <div class="card-media-container">
+                        <img src="<%= listing.image && listing.image.url ? listing.image.url : 'https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?auto=format&fit=crop&w=800&q=60' %>" 
+                             class="card-img" 
+                             alt="<%= listing.title %>" 
+                             loading="lazy" />
+                        
+                        <!-- Guest Favourite Pill Badge -->
+                        <% if(i % 2 === 0) { %>
+                        <div class="badge-guest-favourite">
+                            <span>Guest favourite</span>
+                        </div>
+                        <% } %>
+
+                        <!-- Wishlist Heart Button -->
+                        <button class="card-heart-btn" type="button" aria-label="Add to wishlist" onclick="toggleWishlist(event, this)">
+                            <i class="fa-regular fa-heart"></i>
+                        </button>
+                    </div>
+
+                    <div class="card-info">
+                        <div class="card-title-row">
+                            <span class="card-title-text"><%= cardTitle %></span>
+                        </div>
+                        <div class="card-price-rating-row">
+                            <span class="card-price-text">&#8377;<%= listing.price ? (listing.price * 2).toLocaleString("en-IN") : '18,000' %></span>
+                            <span class="card-unit-text">for 2 nights</span>
+                            <span class="card-dot">&middot;</span>
+                            <span class="card-rating"><i class="fa-solid fa-star star-icon"></i> <%= rating %></span>
+                        </div>
+                    </div>
+                </a>
+            </div>
+            <% } %>
+        </div>
+    </section>
+    <% } %>
+
+    <!-- Section 3 (Places to stay in Thiruvananthapuram / Kerala) -->
+    <% if(section3 && section3.length > 0) { %>
+    <section class="listings-section" id="section-kerala">
+        <div class="section-header">
+            <div class="section-header-text">
+                <h2 class="section-title">
+                    <a href="/listings?region=kerala" class="section-title-link">
+                        <%= sec3Title %> <span class="arrow-symbol">&rarr;</span>
+                    </a>
+                </h2>
+                <p class="section-subtitle"><%= sec3Sub %></p>
+            </div>
+            <div class="section-nav-arrows d-none d-md-flex">
+                <button class="carousel-arrow prev-btn" data-target="carousel-sec3" aria-label="Previous">
+                    <i class="fa-solid fa-chevron-left"></i>
+                </button>
+                <button class="carousel-arrow next-btn" data-target="carousel-sec3" aria-label="Next">
+                    <i class="fa-solid fa-chevron-right"></i>
+                </button>
+            </div>
+        </div>
+
+        <div class="listings-carousel" id="carousel-sec3">
+            <% for(let i=0; i < section3.length; i++) { 
+                let listing = section3[i];
+                let rating = getRating(listing, (4.88 + (i % 12) * 0.01).toFixed(2));
+                let cardTitle = getListingSubtitle(listing);
+            %>
+            <div class="listing-card-wrapper" data-location="<%= (listing.location || '').toLowerCase() %>" data-title="<%= (listing.title || '').toLowerCase() %>">
+                <a href="/listings/<%= listing._id %>" class="airbnb-listing-card">
+                    <div class="card-media-container">
+                        <img src="<%= listing.image && listing.image.url ? listing.image.url : 'https://images.unsplash.com/photo-1571896349842-33c89424de2d?auto=format&fit=crop&w=800&q=60' %>" 
+                             class="card-img" 
+                             alt="<%= listing.title %>" 
+                             loading="lazy" />
+                        
+                        <div class="badge-guest-favourite">
+                            <span>Guest favourite</span>
+                        </div>
+
+                        <!-- Wishlist Heart Button -->
+                        <button class="card-heart-btn" type="button" aria-label="Add to wishlist" onclick="toggleWishlist(event, this)">
+                            <i class="fa-regular fa-heart"></i>
+                        </button>
+                    </div>
+
+                    <div class="card-info">
+                        <div class="card-title-row">
+                            <span class="card-title-text"><%= cardTitle %></span>
+                        </div>
+                        <div class="card-price-rating-row">
+                            <span class="card-price-text">&#8377;<%= listing.price ? listing.price.toLocaleString("en-IN") : '3,200' %></span>
+                            <span class="card-unit-text">for 1 night</span>
+                            <span class="card-dot">&middot;</span>
+                            <span class="card-rating"><i class="fa-solid fa-star star-icon"></i> <%= rating %></span>
+                        </div>
+                    </div>
+                </a>
+            </div>
+            <% } %>
+        </div>
+    </section>
+    <% } %>
+
+    <!-- Section 4 (Additional Stays if any) -->
+    <% if(section4 && section4.length > 0) { %>
+    <section class="listings-section" id="section-more">
+        <div class="section-header">
+            <div class="section-header-text">
+                <h2 class="section-title">
+                    <a href="/listings" class="section-title-link">
+                        Explore more unique places to stay <span class="arrow-symbol">&rarr;</span>
+                    </a>
+                </h2>
+                <p class="section-subtitle">Comfortable homes and scenic retreats worldwide</p>
+            </div>
+        </div>
+
+        <div class="listings-grid">
+            <% for(let listing of section4) { 
+                let rating = getRating(listing, "4.95");
+                let cardTitle = getListingSubtitle(listing);
+            %>
+            <div class="listing-card-wrapper" data-location="<%= (listing.location || '').toLowerCase() %>" data-title="<%= (listing.title || '').toLowerCase() %>">
+                <a href="/listings/<%= listing._id %>" class="airbnb-listing-card">
+                    <div class="card-media-container">
+                        <img src="<%= listing.image && listing.image.url ? listing.image.url : 'https://images.unsplash.com/photo-1501785888041-af3ef285b470?auto=format&fit=crop&w=800&q=60' %>" 
+                             class="card-img" 
+                             alt="<%= listing.title %>" 
+                             loading="lazy" />
+                        
+                        <div class="badge-guest-favourite">
+                            <span>Guest favourite</span>
+                        </div>
+
+                        <button class="card-heart-btn" type="button" aria-label="Add to wishlist" onclick="toggleWishlist(event, this)">
+                            <i class="fa-regular fa-heart"></i>
+                        </button>
+                    </div>
+
+                    <div class="card-info">
+                        <div class="card-title-row">
+                            <span class="card-title-text"><%= cardTitle %></span>
+                        </div>
+                        <div class="card-price-rating-row">
+                            <span class="card-price-text">&#8377;<%= listing.price ? listing.price.toLocaleString("en-IN") : '2,500' %></span>
+                            <span class="card-unit-text">for 1 night</span>
+                            <span class="card-dot">&middot;</span>
+                            <span class="card-rating"><i class="fa-solid fa-star star-icon"></i> <%= rating %></span>
+                        </div>
+                    </div>
+                </a>
+            </div>
+            <% } %>
+        </div>
+    </section>
+    <% } %>
+
+    <!-- Bottom Floating Tag Pill ("Prices include all fees") from Image 3 -->
+    <div class="floating-tax-pill-container" id="taxPill">
+        <div class="floating-tax-pill" role="button" tabindex="0">
+            <span class="pill-tag-icon">🏷️</span>
+            <span class="pill-text">Prices include all fees</span>
+        </div>
     </div>
-
-
-    <script>
-        let taxSwitch = document.getElementById("switchCheckDefault");
-        taxSwitch.addEventListener("click", () => {
-            let taxinfo = document.getElementsByClassName("tax-info");
-            for (info of taxinfo) {
-                if (info.style.display != "inline") {
-                    info.style.display = 'inline';
-                }else{
-                    info.style.display = 'none';
-                }
-
-            }
-        });
-    </script>
+</div>

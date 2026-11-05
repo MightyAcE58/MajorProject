@@ -1,61 +1,75 @@
 <% layout("/layouts/boilerplate") %>
 
-
-    <div class="row mt-3">
-        <div class="col-8 offset-2">
-            <h3>Edit your listing</h3>
-            <form method="POST" action="/listings/<%= listing._id %>?_method=PUT" novalidate class="needs-validation"
-                enctype="multipart/form-data">
-
-                <div class="md-3">
-                    <label for="title" class="form-label">Add a catchy title</label>
-                    <input id="title" name="listing[title]" value=" <%= listing.title %>" type="text"
-                        class="form-control" required />
-                    <div class="valid-feedback">Title looks good!</div>
-                </div>
-
-                <div class="md-3">
-                    <label for="description" class="form-label">Description</label>
-                    <textarea id="description" name="listing[description]" value="<%= listing.description %>"
-                        class="form-control" required><%= listing.description %></textarea>
-                    <div class="invalid-feedback">Please enter a short description</div>
-                </div>
-
-                <div class="md-3">
-                    <p>Original Listing Image</p>
-                    <img src="<%= originalImage %>" />
-                </div>
-
-                <div class="md-3">
-                    <label for="img-link" class="form-label">Upload New Image</label>
-                    <input id="img-link" name="listing[image]" type="file" class="form-control" />
-                </div>
-
-                <div class="row">
-                    <div class="md-3 col-md-4">
-                        <label for="price" class="form-label">Price</label>
-                        <input id="price" name="listing[price]" value="<%= listing.price %>" class="form-control"
-                            required />
-                        <div class="invalid-feedback">Please enter a valid price!</div>
-                    </div>
-
-                    <div class="md-3 col-md-8">
-                        <label for="country" class="form-label">Country</label>
-                        <input id="country" name="listing[country]" value="<%= listing.country %>" class="form-control"
-                            required />
-                        <div class="invalid-feedback">Country name should be vailid</div>
-                    </div>
-
-                </div>
-
-                <div class="md-3">
-                    <label for="location" class="form-label">Location</label>
-                    <input id="location" name="listing[location]" value="<%= listing.location %>" class="form-control"
-                        required />
-                    <div class="invalid-feedback">location should be vailid</div>
-                </div>
-
-                <button class="btn btn-dark edit-btn mt-3">Edit</button>
-            </form>
+<div class="airbnb-form-page">
+    <div class="airbnb-form-container">
+        <div class="form-header text-center mb-4">
+            <h1 class="form-title">Edit your listing</h1>
+            <p class="form-subtitle text-muted">Update details, pricing, photos, or description for <%= listing.title %></p>
         </div>
+
+        <form method="POST" action="/listings/<%= listing._id %>?_method=PUT" novalidate class="needs-validation airbnb-form-card" enctype="multipart/form-data">
+            <!-- Title -->
+            <div class="mb-3">
+                <label for="title" class="airbnb-form-label">Title</label>
+                <input id="title" name="listing[title]" value="<%= listing.title %>" type="text" class="form-control airbnb-input" required />
+                <div class="valid-feedback">Title looks good!</div>
+                <div class="invalid-feedback">Please enter a valid title.</div>
+            </div>
+
+            <!-- Description -->
+            <div class="mb-3">
+                <label for="description" class="airbnb-form-label">Description</label>
+                <textarea id="description" name="listing[description]" rows="5" class="form-control airbnb-textarea" required><%= listing.description %></textarea>
+                <div class="invalid-feedback">Please enter a description.</div>
+            </div>
+
+            <!-- Current Image Preview -->
+            <div class="mb-3">
+                <label class="airbnb-form-label d-block">Current Cover Photo</label>
+                <div class="edit-image-preview">
+                    <img src="<%= originalImage %>" alt="Current listing photo" class="img-thumbnail rounded-3" style="max-height: 180px; object-fit: cover;" />
+                </div>
+            </div>
+
+            <!-- New Image Upload -->
+            <div class="mb-3">
+                <label for="image" class="airbnb-form-label">Replace Cover Photo (Optional)</label>
+                <input id="image" name="listing[image]" type="file" class="form-control airbnb-file-input" accept="image/*" />
+            </div>
+
+            <!-- Price & Country Row -->
+            <div class="row g-3 mb-3">
+                <div class="col-md-5">
+                    <label for="price" class="airbnb-form-label">Price (per night)</label>
+                    <div class="input-group">
+                        <span class="input-group-text bg-white border-end-0">&#8377;</span>
+                        <input id="price" name="listing[price]" value="<%= listing.price %>" type="number" min="100" class="form-control airbnb-input border-start-0" required />
+                    </div>
+                    <div class="invalid-feedback">Please enter a valid price.</div>
+                </div>
+
+                <div class="col-md-7">
+                    <label for="country" class="airbnb-form-label">Country</label>
+                    <input id="country" name="listing[country]" value="<%= listing.country %>" type="text" class="form-control airbnb-input" required />
+                    <div class="invalid-feedback">Please enter the country.</div>
+                </div>
+            </div>
+
+            <!-- Location -->
+            <div class="mb-4">
+                <label for="location" class="airbnb-form-label">Location / City</label>
+                <input id="location" name="listing[location]" value="<%= listing.location %>" type="text" class="form-control airbnb-input" required />
+                <div class="invalid-feedback">Location should be valid.</div>
+            </div>
+
+            <div class="d-flex gap-3">
+                <button class="btn btn-airbnb-primary flex-grow-1 py-3 fw-bold">
+                    Save Changes
+                </button>
+                <a href="/listings/<%= listing._id %>" class="btn btn-outline-dark py-3 px-4 rounded-pill">
+                    Cancel
+                </a>
+            </div>
+        </form>
     </div>
+</div>

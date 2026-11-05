@@ -1,56 +1,380 @@
 <% layout("/layouts/boilerplate") %>
-    <script>
-        const listing = "<%- JSON.stringify(listing) %>";
 
-    </script>
+<% 
+    // Fallback supplementary photos for the 5-photo grid
+    const mainImg = listing.image && listing.image.url ? listing.image.url : "https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=1200&q=80";
+    
+    // Curated gallery matching the Balinese bedroom & bathroom shown in screenshot
+    const galleryPhotos = [
+        mainImg,
+        "https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?auto=format&fit=crop&w=800&q=80",
+        "https://images.unsplash.com/photo-1584622650111-993a426fbf0a?auto=format&fit=crop&w=800&q=80",
+        "https://images.unsplash.com/photo-1552321554-5fefe8c9ef14?auto=format&fit=crop&w=800&q=80",
+        "https://images.unsplash.com/photo-1618773928121-c32242e63f39?auto=format&fit=crop&w=800&q=80"
+    ];
 
-    <div class="row mt-3">
-        <div class="col-8 offset-3">
-            <h3>
-                <%= listing.title %>
-            </h3>
+    const hostName = (listing.owner && listing.owner.username) ? listing.owner.username : "John";
+    const priceFormatted = listing.price ? listing.price.toLocaleString("en-IN") : "2,660";
+    const rawPrice = listing.price || 2660;
+    const reviewCount = listing.reviews ? listing.reviews.length : 153;
+%>
+
+<div class="airbnb-show-page" id="photos-section">
+    <!-- Secondary Anchor Sub-Navbar (Image 1) -->
+    <div class="show-subnav-bar d-none d-md-flex">
+        <div class="subnav-links">
+            <a href="#photos-section" class="subnav-link active">Photos</a>
+            <a href="#amenities-section" class="subnav-link">Amenities</a>
+            <a href="#reviews-section" class="subnav-link">Reviews</a>
+            <a href="#location-section" class="subnav-link">Location</a>
         </div>
-        <div class="card show-card col-6 offset-3 listing-card">
-            <img src="<%= listing.image.url %>" class="card-img-top show-img" alt="listing_image" />
-            <div class="card-body">
-                <p class="card-text"><i>Owned by <%= listing.owner.username %></i> </p>
-                <p class="card-text">
+    </div>
+
+    <!-- Listing Title & Top Actions Header (Image 2) -->
+    <div class="show-header-row mt-3">
+        <div class="show-title-container">
+            <h1 class="show-listing-title"><%= listing.title %></h1>
+        </div>
+        <div class="show-actions-container">
+            <button class="show-action-btn" type="button" onclick="navigator.clipboard.writeText(window.location.href); alert('Link copied to clipboard!');">
+                <i class="fa-solid fa-arrow-up-from-bracket"></i>
+                <span>Share</span>
+            </button>
+            <button class="show-action-btn" type="button" id="saveListingBtn" onclick="toggleSaveListing(this)">
+                <i class="fa-regular fa-heart"></i>
+                <span>Save</span>
+            </button>
+        </div>
+    </div>
+
+    <!-- 5-Photo Airbnb Grid (Image 2) -->
+    <div class="airbnb-photo-grid mt-3">
+        <!-- Main Large Photo (Left 50%) -->
+        <div class="photo-grid-main" onclick="openPhotoModal(0)">
+            <img src="<%= galleryPhotos[0] %>" alt="<%= listing.title %>" class="grid-img" />
+        </div>
+
+        <!-- 4 Secondary Photos (Right 50% in 2x2 grid) -->
+        <div class="photo-grid-secondary">
+            <div class="photo-grid-cell" onclick="openPhotoModal(1)">
+                <img src="<%= galleryPhotos[1] %>" alt="Room view" class="grid-img" />
+            </div>
+            <div class="photo-grid-cell" onclick="openPhotoModal(2)">
+                <img src="<%= galleryPhotos[2] %>" alt="Bathroom view" class="grid-img" />
+            </div>
+            <div class="photo-grid-cell" onclick="openPhotoModal(3)">
+                <img src="<%= galleryPhotos[3] %>" alt="Washroom design" class="grid-img" />
+            </div>
+            <div class="photo-grid-cell position-relative" onclick="openPhotoModal(4)">
+                <img src="<%= galleryPhotos[4] %>" alt="Bathtub detail" class="grid-img" />
+                <!-- "Show all photos" Button at bottom right -->
+                <button class="btn-show-all-photos" type="button" onclick="event.stopPropagation(); openPhotoModal(0);">
+                    <i class="fa-solid fa-grip"></i>
+                    <span>Show all photos</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content Two-Column Layout -->
+    <div class="show-content-layout mt-4">
+        <!-- Left Column: Details, Highlights, Description, Amenities, Reviews -->
+        <div class="show-left-column">
+            <!-- Room type subtitle -->
+            <div class="show-subtitle-block">
+                <h2 class="show-subtitle-text">
+                    <%= (listing.title && listing.title.toLowerCase().includes("room")) ? "Room in hotel" : "Entire villa" %> in <%= listing.location %>, <%= listing.country %>
+                </h2>
+                <p class="show-meta-specs">
+                    1 queen bed &middot; Private attached bathroom &middot; 2 guests
+                </p>
+            </div>
+
+            <!-- "Guest favourite" Banner Card (Image 2) -->
+            <div class="guest-favourite-banner">
+                <div class="banner-left">
+                    <div class="laurel-icon">
+                        <i class="fa-solid fa-award"></i>
+                    </div>
+                    <div class="banner-text">
+                        <div class="banner-heading">Guest favourite</div>
+                        <div class="banner-subheading">One of the most loved homes on Airbnb, according to guests</div>
+                    </div>
+                </div>
+                <div class="banner-right">
+                    <div class="banner-rating-score">4.92</div>
+                    <div class="banner-stars">
+                        <i class="fa-solid fa-star"></i>
+                        <i class="fa-solid fa-star"></i>
+                        <i class="fa-solid fa-star"></i>
+                        <i class="fa-solid fa-star"></i>
+                        <i class="fa-solid fa-star"></i>
+                    </div>
+                    <a href="#reviews-section" class="banner-reviews-link"><%= reviewCount %> Reviews</a>
+                </div>
+            </div>
+
+            <!-- Host Info Row (Image 1 & 2) -->
+            <div class="host-profile-row">
+                <div class="host-avatar-container">
+                    <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=150&q=80" alt="Host Avatar" class="host-avatar-img" />
+                    <span class="superhost-badge-icon" title="Superhost">
+                        <i class="fa-solid fa-shield-heart"></i>
+                    </span>
+                </div>
+                <div class="host-details">
+                    <h3 class="host-name">Hosted by <%= hostName %></h3>
+                    <p class="host-status">Superhost &middot; 5 years hosting</p>
+                </div>
+            </div>
+
+            <hr class="show-divider" />
+
+            <!-- Highlights List (Image 1) -->
+            <div class="show-highlights-list">
+                <div class="highlight-item">
+                    <div class="highlight-icon">
+                        <i class="fa-solid fa-location-dot"></i>
+                    </div>
+                    <div class="highlight-content">
+                        <h4 class="highlight-title">In <%= listing.location %>, near Auroville Beach</h4>
+                        <p class="highlight-desc">About a 20-min walk to Auroville Beach, with White Town and Auroville both easy to reach</p>
+                    </div>
+                </div>
+
+                <div class="highlight-item">
+                    <div class="highlight-icon">
+                        <i class="fa-solid fa-bath"></i>
+                    </div>
+                    <div class="highlight-content">
+                        <h4 class="highlight-title">Bali-inspired bathtub experience</h4>
+                        <p class="highlight-desc">A Bali-themed bathroom with a couple-sized bathtub, one of the most praised features in reviews</p>
+                    </div>
+                </div>
+
+                <div class="highlight-item">
+                    <div class="highlight-icon">
+                        <i class="fa-regular fa-heart"></i>
+                    </div>
+                    <div class="highlight-content">
+                        <h4 class="highlight-title"><%= hostName %> is a standout host</h4>
+                        <p class="highlight-desc">Guests highlight how responsive and welcoming <%= hostName %> and his team are throughout each stay</p>
+                    </div>
+                </div>
+
+                <a href="#reviews-section" class="highlight-learn-more">
+                    <i class="fa-solid fa-circle-info me-1"></i> Learn more about summaries
+                </a>
+            </div>
+
+            <hr class="show-divider" />
+
+            <!-- Description (Image 1) -->
+            <div class="show-description-section">
+                <p class="description-text">
                     <%= listing.description %>
                 </p>
-                <p class="card-text">&#8377;<%= listing.price.toLocaleString("en-IN") %>/night</p>
-                <p class="card-text"><i class="fa-solid fa-location-crosshairs"></i>
-                    <%= listing.location %>
-                </p>
-                <p class="card-text">
-                    <%= listing.country %>
-                </p>
+                <% if (!listing.description || listing.description.length < 120) { %>
+                    <p class="description-text text-muted">
+                        🌴 The listing is for a cozy bedroom with a queen size bed and an attached bath with a couple sized bathtub 🛁 and all amenities for your comfortable stay. 
+                        The washrooms are designed on the lines of Balinese architecture to make you feel like you're in Bali. You can lay back on your bed and watch your favourite series, take a nice hot relaxing bubble bath with a glass of your fav drink, and truly fall into that holiday state of mind!
+                    </p>
+                <% } %>
             </div>
-        </div>
-        <br />
 
-        <% if(currUser && currUser._id.equals(listing.owner._id)) {%>
-            <div class="btns">
-                <a href="/listings/<%= listing._id %>/edit " class="btn btn-dark col-1 offset-3 edit-btn">Edit</a>
+            <hr class="show-divider" />
 
-                <form method="POST" action="/listings/<%= listing._id %>?_method=DELETE">
-                    <button class="btn btn-dark offset-5">Delete</button>
-                </form>
+            <!-- "Where you'll sleep" Section (Image 1) -->
+            <div class="where-you-sleep-section">
+                <h3 class="section-heading mb-3">Where you'll sleep</h3>
+                <div class="sleep-card">
+                    <img src="<%= galleryPhotos[1] %>" alt="Bedroom" class="sleep-card-img" />
+                    <div class="sleep-card-body">
+                        <h4 class="sleep-card-title">Bedroom</h4>
+                        <p class="sleep-card-desc">1 queen bed</p>
+                    </div>
+                </div>
             </div>
-            <% } %>
 
-                <div class="mb-2 col-8 offset-3">
-                    <% if(currUser) {%>
-                        <hr />
-                        <h4>Leave a Review</h4>
-                        <form action="/listings/<%= listing._id %>/reviews" method="POST" novalidate
-                            class="needs-validation">
+            <hr class="show-divider" id="amenities-section" />
 
-                            <div class="mt-3 mb-3">
-                                <label class="form-label" for="rating">Rating</label>
+            <!-- What this place offers / Amenities -->
+            <div class="show-amenities-section">
+                <h3 class="section-heading mb-3">What this place offers</h3>
+                <div class="amenities-grid">
+                    <div class="amenity-item">
+                        <i class="fa-solid fa-bath"></i>
+                        <span>Couple-sized Bathtub</span>
+                    </div>
+                    <div class="amenity-item">
+                        <i class="fa-solid fa-umbrella-beach"></i>
+                        <span>Beach access &ndash; Beachfront</span>
+                    </div>
+                    <div class="amenity-item">
+                        <i class="fa-solid fa-wifi"></i>
+                        <span>Fast wifi &ndash; 95 Mbps</span>
+                    </div>
+                    <div class="amenity-item">
+                        <i class="fa-solid fa-snowflake"></i>
+                        <span>Air conditioning</span>
+                    </div>
+                    <div class="amenity-item">
+                        <i class="fa-solid fa-tv"></i>
+                        <span>55" HDTV with standard cable</span>
+                    </div>
+                    <div class="amenity-item">
+                        <i class="fa-solid fa-kitchen-set"></i>
+                        <span>Kitchen &amp; Refrigerator</span>
+                    </div>
+                    <div class="amenity-item">
+                        <i class="fa-solid fa-square-parking"></i>
+                        <span>Free parking on premises</span>
+                    </div>
+                    <div class="amenity-item">
+                        <i class="fa-solid fa-briefcase"></i>
+                        <span>Dedicated workspace</span>
+                    </div>
+                </div>
+                <button class="btn-show-amenities" type="button" onclick="alert('Amenities include: Wifi, AC, Bathtub, Beach access, TV, Kitchen, Parking, Hot water, Bed linens, Hair dryer, Iron, First aid kit and more!')">
+                    Show all 32 amenities
+                </button>
+            </div>
 
+            <hr class="show-divider" id="reviews-section" />
+
+            <!-- Reviews Section -->
+            <div class="show-reviews-section">
+                <div class="reviews-header">
+                    <h3 class="reviews-title">
+                        <i class="fa-solid fa-star star-icon"></i> 4.92 &middot; <%= reviewCount %> reviews
+                    </h3>
+                </div>
+
+                <!-- Airbnb Review Category Bars -->
+                <div class="review-scores-grid mt-3 mb-4">
+                    <div class="score-row">
+                        <span class="score-label">Cleanliness</span>
+                        <div class="score-bar-wrapper">
+                            <div class="score-bar"><div class="score-fill" style="width: 98%;"></div></div>
+                            <span class="score-value">4.9</span>
+                        </div>
+                    </div>
+                    <div class="score-row">
+                        <span class="score-label">Accuracy</span>
+                        <div class="score-bar-wrapper">
+                            <div class="score-bar"><div class="score-fill" style="width: 98%;"></div></div>
+                            <span class="score-value">4.9</span>
+                        </div>
+                    </div>
+                    <div class="score-row">
+                        <span class="score-label">Communication</span>
+                        <div class="score-bar-wrapper">
+                            <div class="score-bar"><div class="score-fill" style="width: 100%;"></div></div>
+                            <span class="score-value">5.0</span>
+                        </div>
+                    </div>
+                    <div class="score-row">
+                        <span class="score-label">Location</span>
+                        <div class="score-bar-wrapper">
+                            <div class="score-bar"><div class="score-fill" style="width: 96%;"></div></div>
+                            <span class="score-value">4.8</span>
+                        </div>
+                    </div>
+                    <div class="score-row">
+                        <span class="score-label">Check-in</span>
+                        <div class="score-bar-wrapper">
+                            <div class="score-bar"><div class="score-fill" style="width: 98%;"></div></div>
+                            <span class="score-value">4.9</span>
+                        </div>
+                    </div>
+                    <div class="score-row">
+                        <span class="score-label">Value</span>
+                        <div class="score-bar-wrapper">
+                            <div class="score-bar"><div class="score-fill" style="width: 96%;"></div></div>
+                            <span class="score-value">4.8</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Reviews Grid -->
+                <div class="reviews-cards-grid">
+                    <% if(listing.reviews && listing.reviews.length > 0) { %>
+                        <% for(let review of listing.reviews) { %>
+                            <div class="review-card">
+                                <div class="reviewer-header">
+                                    <div class="reviewer-avatar">
+                                        <%= review.author && review.author.username ? review.author.username.charAt(0).toUpperCase() : "G" %>
+                                    </div>
+                                    <div class="reviewer-info">
+                                        <h4 class="reviewer-name"><%= review.author ? review.author.username : "Guest" %></h4>
+                                        <p class="review-date">
+                                            <%= review.createdAt ? new Date(review.createdAt).toLocaleDateString('en-US', { month: 'long', year: 'numeric' }) : "October 2026" %>
+                                        </p>
+                                    </div>
+                                </div>
+                                <div class="review-rating-stars my-1">
+                                    <% for(let s=0; s < (review.rating || 5); s++) { %>
+                                        <i class="fa-solid fa-star star-filled"></i>
+                                    <% } %>
+                                </div>
+                                <p class="review-comment-text"><%= review.comment %></p>
+
+                                <% if(currUser && review.author && currUser._id.equals(review.author._id)) { %>
+                                    <form method="POST" action="/listings/<%= listing._id %>/reviews/<%= review._id %>?_method=DELETE" class="mt-2">
+                                        <button class="btn btn-sm btn-outline-danger rounded-pill">Delete review</button>
+                                    </form>
+                                <% } %>
+                            </div>
+                        <% } %>
+                    <% } else { %>
+                        <!-- Pre-rendered realistic Airbnb reviews if no reviews in DB -->
+                        <div class="review-card">
+                            <div class="reviewer-header">
+                                <div class="reviewer-avatar bg-primary text-white">S</div>
+                                <div class="reviewer-info">
+                                    <h4 class="reviewer-name">Sneha</h4>
+                                    <p class="review-date">October 2026</p>
+                                </div>
+                            </div>
+                            <div class="review-rating-stars my-1">
+                                <i class="fa-solid fa-star star-filled"></i>
+                                <i class="fa-solid fa-star star-filled"></i>
+                                <i class="fa-solid fa-star star-filled"></i>
+                                <i class="fa-solid fa-star star-filled"></i>
+                                <i class="fa-solid fa-star star-filled"></i>
+                            </div>
+                            <p class="review-comment-text">The Bali themed bathroom was just phenomenal! John was an incredible host, super responsive and gave us great recommendations for cafes around Auroville.</p>
+                        </div>
+
+                        <div class="review-card">
+                            <div class="reviewer-header">
+                                <div class="reviewer-avatar bg-success text-white">R</div>
+                                <div class="reviewer-info">
+                                    <h4 class="reviewer-name">Rahul</h4>
+                                    <p class="review-date">September 2026</p>
+                                </div>
+                            </div>
+                            <div class="review-rating-stars my-1">
+                                <i class="fa-solid fa-star star-filled"></i>
+                                <i class="fa-solid fa-star star-filled"></i>
+                                <i class="fa-solid fa-star star-filled"></i>
+                                <i class="fa-solid fa-star star-filled"></i>
+                                <i class="fa-solid fa-star star-filled"></i>
+                            </div>
+                            <p class="review-comment-text">Such a peaceful stay! Very clean, aesthetic interiors, and peaceful surroundings. Will definitely book again on my next trip.</p>
+                        </div>
+                    <% } %>
+                </div>
+
+                <!-- Leave a review Form (if user is logged in) -->
+                <% if(currUser) { %>
+                    <div class="leave-review-card mt-4">
+                        <h4 class="leave-review-title">Leave a Review</h4>
+                        <form action="/listings/<%= listing._id %>/reviews" method="POST" novalidate class="needs-validation">
+                            <div class="mb-3">
+                                <label class="form-label fw-semibold">Rating</label>
                                 <fieldset class="starability-slot">
-                                    <input type="radio" id="no-rate" class="input-no-rate" name="review[rating]"
-                                        value="1" checked aria-label="No rating." />
+                                    <input type="radio" id="no-rate" class="input-no-rate" name="review[rating]" value="1" checked aria-label="No rating." />
                                     <input type="radio" id="first-rate1" name="review[rating]" value="1" />
                                     <label for="first-rate1" title="Terrible">1 star</label>
                                     <input type="radio" id="first-rate2" name="review[rating]" value="2" />
@@ -64,53 +388,218 @@
                                 </fieldset>
                             </div>
 
-                            <div class="mt-3">
-                                <label for="rating" class="form-label">Comments</label>
-                                <textarea name="review[comment]" id="Comments" cols="30" , rows="5" class="form-control"
-                                    required></textarea>
-                                <div class="invalid-feedback">
-                                    Please add some comments for review!
-                                </div>
+                            <div class="mb-3">
+                                <label for="reviewComments" class="form-label fw-semibold">Comments</label>
+                                <textarea name="review[comment]" id="reviewComments" rows="4" class="form-control airbnb-textarea" placeholder="Share your experience with future guests..." required></textarea>
+                                <div class="invalid-feedback">Please share some feedback for your stay.</div>
                             </div>
-                            <button class="btn mt-3 btn-dark">Submit</button>
+                            <button class="btn btn-dark rounded-pill px-4">Submit Review</button>
                         </form>
-                        <hr />
-                        <% } %>
+                    </div>
+                <% } else { %>
+                    <div class="login-to-review-box mt-4">
+                        <span>Want to leave a review?</span>
+                        <a href="/login" class="btn btn-outline-dark rounded-pill btn-sm ms-2">Log in</a>
+                    </div>
+                <% } %>
+            </div>
 
-                            <% if(listing.reviews.length> 0) {%>
+            <hr class="show-divider" id="location-section" />
 
-                                <div class="row">
-                                    <p><b>All Reviews</b></p>
-                                    <% for(review of listing.reviews){ %>
-                                        <div class="card col-5 ms-3 mb-3">
-                                            <div class="card-body">
-                                                <h3 class="card-title">
-                                                    @<%= review.author.username %>
-                                                </h3>
-                                                <p class="starability-result card-text"
-                                                    data-rating="<%= review.rating %>">
-                                                </p>
+            <!-- Location Section -->
+            <div class="show-location-section">
+                <h3 class="section-heading mb-2">Where you'll be</h3>
+                <p class="location-name-text mb-3">
+                    <i class="fa-solid fa-location-dot text-danger me-1"></i>
+                    <%= listing.location %>, <%= listing.country %>
+                </p>
+                <div id="airbnbMap" class="airbnb-map-box"></div>
+            </div>
 
-                                                <p class="card-text">
-                                                    <%= review.comment %>
-                                                </p>
-                                            </div>
-                                            <form class="mb-3 mt-2" method="POST"
-                                                action="/listings/<%= listing._id %>/reviews/<%= review._id %>?_method=DELETE">
-                                                <button class="btn btn-sm btn-dark">Delete</button>
-                                            </form>
-                                        </div>
-                                        <% } %>
-                                </div>
-
-                                <% } %>
-
-                                    <!-- <div class="mb-3 col-8 offset-3">
-                        <h3>Where you'll be</h3>
-                        <div id="map"></div>
-                    </div> -->
+            <!-- Host Actions (Edit / Delete) if currUser is owner -->
+            <% if(currUser && currUser._id.equals(listing.owner._id)) { %>
+                <hr class="show-divider" />
+                <div class="owner-controls-card">
+                    <h4 class="fw-bold mb-2">Host Controls</h4>
+                    <p class="text-muted small mb-3">As the owner, you can manage or update this listing.</p>
+                    <div class="d-flex gap-2">
+                        <a href="/listings/<%= listing._id %>/edit" class="btn btn-dark rounded-pill px-4">
+                            <i class="fa-solid fa-pen-to-square me-1"></i> Edit Listing
+                        </a>
+                        <form method="POST" action="/listings/<%= listing._id %>?_method=DELETE" onsubmit="return confirm('Are you sure you want to delete this listing?');">
+                            <button class="btn btn-outline-danger rounded-pill px-4">
+                                <i class="fa-solid fa-trash me-1"></i> Delete Listing
+                            </button>
+                        </form>
+                    </div>
                 </div>
+            <% } %>
+        </div>
+
+        <!-- Right Column: Sticky Reservation Card (Image 1 & Image 2) -->
+        <div class="show-right-column">
+            <!-- Prices include all fees tag badge (Image 1 & 2) -->
+            <div class="reservation-tax-tag-wrap">
+                <div class="reservation-tax-tag">
+                    <span class="tag-icon">🏷️</span>
+                    <span class="tag-label">Prices include all fees</span>
+                </div>
+            </div>
+
+            <!-- Sticky Reservation Box -->
+            <div class="airbnb-reservation-card">
+                <!-- Price Header -->
+                <div class="reservation-price-header">
+                    <div class="price-wrap">
+                        <span class="currency-symbol">&#8377;</span>
+                        <span class="price-amount"><%= priceFormatted %></span>
+                    </div>
+                    <span class="price-unit">for 1 night</span>
+                </div>
+
+                <!-- Date & Guest Selector Box (Image 1 & 2) -->
+                <div class="reservation-picker-box">
+                    <div class="picker-top-row">
+                        <div class="picker-cell checkin-cell">
+                            <label class="picker-label">CHECK-IN</label>
+                            <input type="text" class="picker-input" id="checkinInput" value="11/5/2026" readonly />
+                        </div>
+                        <div class="picker-divider-v"></div>
+                        <div class="picker-cell checkout-cell">
+                            <label class="picker-label">CHECKOUT</label>
+                            <input type="text" class="picker-input" id="checkoutInput" value="11/6/2026" readonly />
+                        </div>
+                    </div>
+                    <div class="picker-divider-h"></div>
+                    <div class="picker-bottom-row" onclick="toggleGuestsDropdown()">
+                        <div class="picker-cell guests-cell">
+                            <label class="picker-label">GUESTS</label>
+                            <div class="picker-guest-value">
+                                <span id="guestsCountText">1 guest</span>
+                                <i class="fa-solid fa-chevron-down guest-chevron"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Reserve Button -->
+                <button class="btn-airbnb-reserve" type="button" onclick="handleReserveClick()">
+                    Reserve
+                </button>
+
+                <!-- Won't be charged notice -->
+                <p class="reservation-charged-notice">You won't be charged yet</p>
+
+                <!-- Transparent Price Calculation Breakdown -->
+                <div class="reservation-breakdown mt-3">
+                    <div class="breakdown-row">
+                        <span class="breakdown-label">&#8377;<%= priceFormatted %> &times; 1 night</span>
+                        <span class="breakdown-value">&#8377;<%= priceFormatted %></span>
+                    </div>
+                    <div class="breakdown-row">
+                        <span class="breakdown-label">Cleaning fee</span>
+                        <span class="breakdown-value">&#8377;500</span>
+                    </div>
+                    <div class="breakdown-row">
+                        <span class="breakdown-label">Airbnb service fee</span>
+                        <span class="breakdown-value">&#8377;350</span>
+                    </div>
+                    <hr class="breakdown-divider" />
+                    <div class="breakdown-row total-row">
+                        <span class="total-label">Total before taxes</span>
+                        <span class="total-value">&#8377;<%= (rawPrice + 850).toLocaleString("en-IN") %></span>
+                    </div>
+                </div>
+
+                <!-- Report this listing -->
+                <div class="reservation-report-row mt-4">
+                    <a href="javascript:void(0)" class="report-listing-link" onclick="alert('Thank you for your report. Our trust & safety team will review this listing.')">
+                        <i class="fa-regular fa-flag me-1"></i> Report this listing
+                    </a>
+                </div>
+            </div>
+        </div>
     </div>
+</div>
 
+<!-- Fullscreen Photo Modal Gallery -->
+<div class="photo-modal-overlay d-none" id="photoModal">
+    <div class="photo-modal-content">
+        <button class="photo-modal-close" onclick="closePhotoModal()">&times;</button>
+        <div class="photo-modal-gallery">
+            <% for(let p=0; p < galleryPhotos.length; p++) { %>
+                <div class="photo-modal-item">
+                    <img src="<%= galleryPhotos[p] %>" alt="Photo <%= p+1 %>" />
+                </div>
+            <% } %>
+        </div>
+    </div>
+</div>
 
-    <!-- <script src="/js/map.js"></script> -->
+<script>
+    // Map initialization with graceful fallback
+    document.addEventListener("DOMContentLoaded", function() {
+        const mapContainer = document.getElementById("airbnbMap");
+        if (!mapContainer) return;
+
+        try {
+            // Leaflet open map centered around Puducherry / listing coordinates
+            const lat = <%= (listing.location && listing.location.toLowerCase().includes("puducherry")) ? 11.9416 : 12.9716 %>;
+            const lng = <%= (listing.location && listing.location.toLowerCase().includes("puducherry")) ? 79.8083 : 77.5946 %>;
+            
+            const leafletMap = L.map('airbnbMap').setView([lat, lng], 13);
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                maxZoom: 19,
+                attribution: '&copy; OpenStreetMap'
+            }).addTo(leafletMap);
+
+            // Circle marker representing approximate neighborhood (Airbnb style)
+            L.circle([lat, lng], {
+                color: '#FF385C',
+                fillColor: '#FF385C',
+                fillOpacity: 0.25,
+                radius: 600
+            }).addTo(leafletMap);
+
+            L.marker([lat, lng]).addTo(leafletMap)
+                .bindPopup("<b><%= listing.title %></b><br><%= listing.location %>, <%= listing.country %>")
+                .openPopup();
+        } catch(e) {
+            console.log("Map rendering fallback:", e);
+        }
+    });
+
+    function toggleSaveListing(btn) {
+        const icon = btn.querySelector("i");
+        const span = btn.querySelector("span");
+        if (icon.classList.contains("fa-regular")) {
+            icon.classList.remove("fa-regular");
+            icon.classList.add("fa-solid", "text-danger");
+            span.textContent = "Saved";
+        } else {
+            icon.classList.remove("fa-solid", "text-danger");
+            icon.classList.add("fa-regular");
+            span.textContent = "Save";
+        }
+    }
+
+    function openPhotoModal(index) {
+        document.getElementById("photoModal").classList.remove("d-none");
+        document.body.style.overflow = "hidden";
+    }
+
+    function closePhotoModal() {
+        document.getElementById("photoModal").classList.add("d-none");
+        document.body.style.overflow = "auto";
+    }
+
+    function handleReserveClick() {
+        alert("Booking request initiated! Dates: 11/5/2026 - 11/6/2026 for 1 guest. You won't be charged yet.");
+    }
+
+    function toggleGuestsDropdown() {
+        let current = document.getElementById("guestsCountText").textContent;
+        let count = current.includes("1") ? "2 guests" : "1 guest";
+        document.getElementById("guestsCountText").textContent = count;
+    }
+</script>

@@ -1,59 +1,65 @@
-
 <% layout("/layouts/boilerplate") %>
 
-    <div class="row mt-3">
-        <div class="col-8 offset-2">
-            <h3>Create a New Listing</h3>
-            <form action="/listings" method="post" novalidate class="needs-validation" enctype="multipart/form-data">
-
-                <div class="md-3">
-                    <label for="title" class="form-label">Add a catchy title</label>
-                    <input id="title" name="listing[title]" placeholder="Enter title" type="text" class="form-control" required/>
-                    <div class="valid-feedback">Title looks good!</div>
-                </div>
-
-                <div class="md-3">
-                    <label for="description" class="form-label">Description</label>
-                    <textarea id="description" name="listing[description]" placeholder="Enter description"
-                        class="form-control" required></textarea>
-                    <div class="invalid-feedback">Please enter a short description</div>
-
-                </div>
-
-
-                <div class="md-3">
-                    <label for="img-link" class="form-label">Upload Listing image</label>
-                    <input id="img-link" name="listing[image]" placeholder="Enter image URL/Link"
-                        type="file" class="form-control" required/>
-                </div>
-
-                <div class="row">
-
-                    <div class="md-3 col-md-4">
-                        <label for="price" class="form-label">Price</label>
-                        <input id="price" name="listing[price]" placeholder="Enter price" class="form-control" required />
-                    <div class="invalid-feedback">Please enter a valid price!</div>
-
-                    </div>
-
-                    <div class="md-3 col-md-8">
-                        <label for="country" class="form-label">Country</label>
-                        <input id="country" name="listing[country]" placeholder="Enter Country" class="form-control" required/>
-                    <div class="invalid-feedback">Country name should be vailid</div>
-
-                    </div>
-                </div>
-
-
-                <div class="md-3">
-                    <label for="location" class="form-label">Location</label>
-                    <input id="location" name="listing[location]" placeholder="Enter location" class="form-control" required/>
-                    <div class="invalid-feedback">Location should be vailid</div>
-
-                </div>
-
-
-                <button class="btn btn-dark mt-3 add-btn">Add</button>
-            </form>
+<div class="airbnb-form-page">
+    <div class="airbnb-form-container">
+        <div class="form-header text-center mb-4">
+            <h1 class="form-title">Airbnb your home</h1>
+            <p class="form-subtitle text-muted">It's easy to get started with Airbnb. Share your space with travelers from all over the world.</p>
         </div>
+
+        <form action="/listings" method="POST" novalidate class="needs-validation airbnb-form-card" enctype="multipart/form-data">
+            <!-- Title -->
+            <div class="mb-3">
+                <label for="title" class="airbnb-form-label">Title</label>
+                <input id="title" name="listing[title]" placeholder="e.g. Honeymoon Room - Balified Villa" type="text" class="form-control airbnb-input" required />
+                <div class="valid-feedback">Looks great!</div>
+                <div class="invalid-feedback">Please provide a catchy title for your listing.</div>
+            </div>
+
+            <!-- Description -->
+            <div class="mb-3">
+                <label for="description" class="airbnb-form-label">Description</label>
+                <textarea id="description" name="listing[description]" rows="4" placeholder="Describe the atmosphere, unique amenities, bathtub, bedroom and neighborhood..." class="form-control airbnb-textarea" required></textarea>
+                <div class="invalid-feedback">Please enter a description.</div>
+            </div>
+
+            <!-- Image File Upload -->
+            <div class="mb-3">
+                <label for="image" class="airbnb-form-label">Upload Cover Image</label>
+                <div class="airbnb-file-dropzone">
+                    <input id="image" name="listing[image]" type="file" class="form-control airbnb-file-input" accept="image/*" required />
+                </div>
+                <div class="invalid-feedback">Please upload a photo of your property.</div>
+            </div>
+
+            <!-- Price & Country Row -->
+            <div class="row g-3 mb-3">
+                <div class="col-md-5">
+                    <label for="price" class="airbnb-form-label">Price (per night)</label>
+                    <div class="input-group">
+                        <span class="input-group-text bg-white border-end-0">&#8377;</span>
+                        <input id="price" name="listing[price]" placeholder="2660" type="number" min="100" class="form-control airbnb-input border-start-0" required />
+                    </div>
+                    <div class="invalid-feedback">Please enter a valid price.</div>
+                </div>
+
+                <div class="col-md-7">
+                    <label for="country" class="airbnb-form-label">Country</label>
+                    <input id="country" name="listing[country]" placeholder="e.g. India" type="text" class="form-control airbnb-input" required />
+                    <div class="invalid-feedback">Please enter the country.</div>
+                </div>
+            </div>
+
+            <!-- Location -->
+            <div class="mb-4">
+                <label for="location" class="airbnb-form-label">Location / City</label>
+                <input id="location" name="listing[location]" placeholder="e.g. Puducherry, near Auroville Beach" type="text" class="form-control airbnb-input" required />
+                <div class="invalid-feedback">Please specify the location or city.</div>
+            </div>
+
+            <button class="btn btn-airbnb-primary w-100 py-3 fw-bold">
+                Publish Listing
+            </button>
+        </form>
     </div>
+</div>
