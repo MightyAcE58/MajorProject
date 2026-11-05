@@ -129,6 +129,10 @@ app.use((err, req, res, next) => {
     //  res.status(statusCode).send(message);
 });
 
-app.listen(PORT, () => {
-    console.log(`Server is listening on port ${PORT}`);
-});
+if (require.main === module) {
+    app.listen(PORT, () => {
+        console.log(`Server is listening on port ${PORT}`);
+    });
+}
+
+module.exports = app;
