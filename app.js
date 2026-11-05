@@ -2,6 +2,8 @@ if (process.env.NODE_ENV != "production") {
     require('dotenv').config();
 }
 
+const PORT = process.env.PORT || 8080;
+
 const express = require("express");
 const app = express();
 const mongoose = require("mongoose");
@@ -25,8 +27,6 @@ const reviews = require("./routes/review.js");
 const userRouter = require("./routes/user.js");
 const { log } = require('console');
 
-
-
 const dbUrl = process.env.ATLASDB_URL;
 
 
@@ -46,6 +46,9 @@ app.use(express.urlencoded({ extended: true }));
 app.use(methodOverride("_method"));
 app.engine('ejs', ejsMate);
 app.use(express.static(path.join(__dirname, "/public")));
+
+console.log("ATLASDB_URL exists:", !!process.env.ATLASDB_URL);
+console.log("SECRET exists:", !!process.env.SECRET);
 
 const store = MongoStore.create({
     mongoUrl: dbUrl,
@@ -99,6 +102,9 @@ app.use((req, res, next) => { //here we can define local variable to access
 //     res.send("Hi, I am root");
 // });
 
+app.get("/", (req, res) => {
+    res.redirect("/listings");
+});
 app.use("/", userRouter);
 app.use("/listings", listings);
 app.use("/listings/:id/reviews", reviews);
@@ -116,6 +122,6 @@ app.use((err, req, res, next) => {
     //  res.status(statusCode).send(message);
 });
 
-app.listen(8080, () => {
-    console.log("Server is listening to port 8080");
+app.listen(PORT, () => {
+    console.log(`Server is listening on port ${PORT}`);
 });
